@@ -45,6 +45,14 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 SizedBox(
                   height: 20.h,
                 ),
+                NewRow(
+                  text: controller.getWhoWeAreText(context),
+                  icon: Icons.error_outline,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+
                 GestureDetector(
                   onTap: () {
                     Get.bottomSheet(
@@ -57,6 +65,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                 ListTile(
                                   onTap: () {
                                     Get.updateLocale(const Locale('ar'));
+                                    Get.back();
+                                    controller.yOffset = 0;
+                                    controller.xOffset = 0;
+                                    controller.isDrawerOpen = false;
                                   },
                                   title: Text(
                                     'العربية',
@@ -71,6 +83,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                 ListTile(
                                   onTap: () {
                                     Get.updateLocale(const Locale('en'));
+                                    Get.back();
+                                    controller.xOffset = 0;
+                                    controller.yOffset = 0;
+                                    controller.isDrawerOpen = false;
                                   },
                                   title: Text(
                                     'English',
@@ -85,6 +101,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                 ListTile(
                                   onTap: () {
                                     Get.updateLocale(const Locale('ja'));
+                                    Get.back();
+                                    controller.xOffset = 0;
+                                    controller.yOffset = 0;
+                                    controller.isDrawerOpen = false;
                                   },
                                   title: Text(
                                     '日本語',
@@ -99,6 +119,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                 ListTile(
                                   onTap: () {
                                     Get.updateLocale(const Locale('zh'));
+                                    Get.back();
+                                    controller.xOffset = 0;
+                                    controller.yOffset = 0;
+                                    controller.isDrawerOpen = false;
                                   },
                                   title: Text(
                                     '中文',
@@ -116,10 +140,23 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     // Get.updateLocale(Locale('ar'));
                   },
                   child: NewRow(
-                    text: '${controller.getLanguageText(context)}',
+                    text: controller.getLanguageText(context),
                     icon: Icons.g_translate_sharp,
                   ),
                 ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: NewRow(
+                    text: controller.getBackToMapText(context),
+                    icon: Icons.map_outlined,
+                  ),
+                ),
+
                 // SizedBox(
                 //   height: 20,
                 // ),

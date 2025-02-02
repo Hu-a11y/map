@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter_compass/flutter_compass.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
+import 'package:map/controllers/language_controller.dart';
+import 'package:map/view/drawer_page.dart';
+import '../constant/color.dart';
 import '../view/deaitls_page.dart';
 import 'dart:convert';
 import '../models/location_model.dart';
@@ -13,6 +18,7 @@ import '../services/location_service.dart';
 
 class MapController extends GetxController {
   final LocationService locationService = LocationService();
+  LanguageController controller12 = LanguageController();
 
   // Completer للتحكم في خريطة Google Maps
   final Completer<GoogleMapController> controller =
@@ -52,6 +58,11 @@ class MapController extends GetxController {
       longitude: 44.549068,
       name: "الموقع 3",
     ),
+    LocationModel(
+      latitude: 32.39320,
+      longitude: 44.39940,
+      name: "IT Info",
+    ),
   ];
 
   // إحداثيات الموقع الحالي
@@ -87,10 +98,15 @@ class MapController extends GetxController {
     LocationData? locationData = await locationService.getLocation();
 
     if (locationData != null) {
-      lat.value = locationData.latitude!;
-      lng.value = locationData.longitude!;
+      // 32.493122, 44.418219
+      lat.value = 32.39329;
 
-      // إضافة Marker لموقعك الحالي
+      // 32.493122;
+      // locationData.latitude!;
+      lng.value = 44.39946;
+      // 44.418219;
+      // locationData.longitude!;
+
       markers.add(
         Marker(
           markerId: const MarkerId('current_location'),
@@ -103,25 +119,32 @@ class MapController extends GetxController {
         ),
       );
 
-      // رسم خطوط الطرق إلى جميع النقاط
-      // _drawPolylines();
+     
+    
     } else {
       print('Unable to get location.');
     }
   }
 
-  // دالة لبدء تتبع الموقع بشكل دوري
+  double bearing = 0.0;
+
   void _startLocationTracking() {
     Location location = Location();
-
+    FlutterCompass.events?.listen((CompassEvent event) {
+      bearing = event.heading ?? 0;
+    });
     _locationSubscription =
         location.onLocationChanged.listen((LocationData locationData) {
       goToCurrentLocation();
       if (locationData.latitude != null && locationData.longitude != null) {
-        lat.value = locationData.latitude!;
-        lng.value = locationData.longitude!;
+        lat.value = 32.39329;
 
-        // التحقق من الوصول إلى أي موقع
+        // 32.493122;
+        // locationData.latitude!;
+        lng.value = 44.39946;
+        // 44.418219;
+        // locationData.longitude!;
+
         for (var location in locations) {
           double distance = _calculateDistance(
             lat.value,
@@ -129,10 +152,20 @@ class MapController extends GetxController {
             location.latitude,
             location.longitude,
           );
+          int index = 0;
+          if (controller12.landmarks != null) {
+            for (var i = 0; i < controller12.landmarks!.length; i++) {
+              if (controller12.landmarks![i].title.toUpperCase() ==
+                  location.name.toUpperCase()) {
+                index = i;
+                update();
+              }
+            }
+          }
 
           // إذا كانت المسافة أقل من 13 مترًا، الانتقال إلى صفحة أخرى
-          if (distance < 50) {
-            _navigateToDetailsPage(location);
+          if (distance < 10) {
+            _navigateToDetailsPage(index);
             break; // إيقاف التحقق بعد الوصول إلى موقع واحد
           }
         }
@@ -141,11 +174,22 @@ class MapController extends GetxController {
   }
 
   // دالة للانتقال إلى صفحة التفاصيل
-  void _navigateToDetailsPage(LocationModel location) {
-    Get.to(() => DetailsPage(location: location));
+  void _navigateToDetailsPage(int ifs) {
+    // 32.493122, 44.418219
+
+    Get.to(Scaffold(
+      backgroundColor: HexColor(backgroundColor),
+      body: Stack(
+        children: [
+          DrawerScreen(),
+          DetailsPage(
+            index: 0,
+          ),
+        ],
+      ),
+    ));
   }
 
-  // دالة لإضافة النقاط إلى الخريطة
   void _addMarkers() {
     for (var location in locations) {
       markers.add(
@@ -162,94 +206,9 @@ class MapController extends GetxController {
     }
   }
 
-  // // دالة لرسم خطوط الطرق
-  // void _drawPolylines() async {
-  //   List<Polyline> newPolylines = [];
-
-  //   for (var location in locations) {
-  //     try {
-  //       List<LatLng> points = await _getDirections(
-  //         LatLng(lat.value, lng.value), // موقعك الحالي
-  //         LatLng(location.latitude, location.longitude), // النقطة المحددة
-  //       );
-
-  //       newPolylines.add(
-  //         Polyline(
-  //           polylineId: PolylineId('polyline_${location.name}'),
-  //           points: points,
-  //           color: Colors.blue,
-  //           width: 5,
-  //         ),
-  //       );
-  //     } catch (e) {
-  //       print('Error drawing polyline to ${location.name}: $e');
-  //     }
-  //   }
-
-  //   polylines.value = newPolylines;
-  // }
-
-  // // دالة للحصول على بيانات الاتجاهات من Directions API
-  // Future<List<LatLng>> _getDirections(LatLng origin, LatLng destination) async {
-  //   final String url =
-  //       'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=YOUR_API_KEY';
-
-  //   final response = await http.get(Uri.parse(url));
-
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-
-  //     if (data['status'] == 'OK') {
-  //       List<LatLng> points = [];
-  //       data['routes'][0]['legs'][0]['steps'].forEach((step) {
-  //         points.addAll(_decodePolyline(step['polyline']['points']));
-  //       });
-  //       return points;
-  //     } else {
-  //       throw Exception(
-  //           'Directions API Error: ${data['status']} - ${data['error_message'] ?? 'No error message'}');
-  //     }
-  //   } else {
-  //     throw Exception(
-  //         'Failed to load directions. Status code: ${response.statusCode}');
-  //   }
-  // }
-
-  // // دالة لفك تشفير Polyline
-  // List<LatLng> _decodePolyline(String encoded) {
-  //   List<LatLng> points = [];
-  //   int index = 0, len = encoded.length;
-  //   int lat = 0, lng = 0;
-
-  //   while (index < len) {
-  //     int b, shift = 0, result = 0;
-  //     do {
-  //       b = encoded.codeUnitAt(index++) - 63;
-  //       result |= (b & 0x1f) << shift;
-  //       shift += 5;
-  //     } while (b >= 0x20);
-  //     int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-  //     lat += dlat;
-
-  //     shift = 0;
-  //     result = 0;
-  //     do {
-  //       b = encoded.codeUnitAt(index++) - 63;
-  //       result |= (b & 0x1f) << shift;
-  //       shift += 5;
-  //     } while (b >= 0x20);
-  //     int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-  //     lng += dlng;
-
-  //     points.add(LatLng(lat / 1e5, lng / 1e5));
-  //   }
-  //   return points;
-  // }
-
-  // دالة لحساب المسافة بين نقطتين
   double _calculateDistance(
       double lat1, double lng1, double lat2, double lng2) {
-    const double earthRadius = 6371000; // نصف قطر الأرض بالأمتار
+    const double earthRadius = 6371000;
     double dLat = _toRadians(lat2 - lat1);
     double dLng = _toRadians(lng2 - lng1);
 
@@ -264,20 +223,18 @@ class MapController extends GetxController {
     return earthRadius * c;
   }
 
-  // تحويل الدرجات إلى راديان
   double _toRadians(double degrees) {
     return degrees * (pi / 180);
   }
 
-  // دالة للانتقال إلى الموقع الحالي
   Future<void> goToCurrentLocation() async {
     if (controller.isCompleted) {
       final GoogleMapController controller1 = await controller.future;
       await controller1.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(lat.value, lng.value), // موقعك الحالي
-            zoom: 50.50, // مستوى التكبير
+            target: LatLng(lat.value, lng.value),
+            zoom: 50.50,
           ),
         ),
       );

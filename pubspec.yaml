@@ -53,6 +53,8 @@ dependencies:
   flutter_svg: ^2.0.17
   color_hex: ^0.0.1
   hexcolor: ^3.0.1
+  flutter_tts: ^4.2.1
+  flutter_compass: ^0.8.1
 
 dev_dependencies:
   flutter_test:

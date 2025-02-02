@@ -12,15 +12,21 @@ import '../generated/l10n.dart';
 import '../models/location_model.dart';
 
 class DetailsPage extends StatelessWidget {
-  final LocationModel location;
 
-  DetailsPage({required this.location});
+  final int index;
+
+  DetailsPage({required this.index});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
       init: LanguageController(),
       builder: (controller) {
+        controller.getAllLandmarks(context);
+        String title = controller.landmarks![index].title;
+        String subTitle = controller.landmarks![index].subtitle;
+        String discription = controller.landmarks![index].description;
+        String image = controller.landmarks![index].image;
         List<Widget> appBarIcons = [
           controller.isDrawerOpen
               ? GestureDetector(
@@ -54,20 +60,35 @@ class DetailsPage extends StatelessWidget {
                       ))),
                 ),
           const Spacer(),
-          Transform.flip(
-            flipX: true,
-            child: Icon(
-              Icons.play_arrow,
-              size: 35.sp,
-              color: HexColor(fontColor2),
-            ),
-          ),
+          !controller.isSpeak
+              ? GestureDetector(
+                  onTap: () {
+                    controller.speak(discription);
+                  },
+                  child: Transform.flip(
+                    flipX: true,
+                    child: Icon(
+                      Icons.play_arrow,
+                      size: 35.sp,
+                      color: HexColor(fontColor2),
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    controller.stopSpeak();
+                  },
+                  child: Transform.flip(
+                    flipX: true,
+                    child: Icon(
+                      Icons.stop,
+                      size: 35.sp,
+                      color: HexColor(fontColor2),
+                    ),
+                  ),
+                ),
         ];
 
-        controller.getAllLandmarks(context);
-        String title = controller.landmarks![0].title;
-        String subTitle = controller.landmarks![0].subtitle;
-        String discription = controller.landmarks![0].description;
         return AnimatedContainer(
           transform: Matrix4.translationValues(
               controller.xOffset, controller.yOffset, 0)
@@ -155,7 +176,7 @@ class DetailsPage extends StatelessWidget {
                       width: 250.w,
                       child: ClipRect(
                         child: Image.asset(
-                          'assets/images/23900739.png',
+                          image,
                           fit: BoxFit.cover,
                         ),
                       ),

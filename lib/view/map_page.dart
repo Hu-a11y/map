@@ -14,20 +14,21 @@ class MapPage extends StatelessWidget {
           mapType: MapType.hybrid,
           initialCameraPosition: CameraPosition(
             target: LatLng(mapController.lat.value, mapController.lng.value),
-            zoom: 14.4746,
+            zoom: 50.50,
+            bearing: mapController.bearing,
           ),
           markers: Set<Marker>.from(mapController.markers),
           polylines: Set<Polyline>.from(mapController.polylines),
           onMapCreated: (GoogleMapController controller) {
             mapController.controller
-                .complete(controller); // استخدام _controller هنا
+                .complete(controller); 
           },
         );
       }),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          mapController.getLocation(); // تحديث الموقع الحالي
-          mapController.goToCurrentLocation(); // الانتقال إلى الموقع الحالي
+          mapController.getLocation(); 
+          mapController.goToCurrentLocation(); 
         },
         label: const Text('موقعي الحالي'),
         icon: const Icon(Icons.location_on),

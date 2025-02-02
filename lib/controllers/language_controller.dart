@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:map/constant/language.dart';
 import 'package:map/generated/l10n.dart';
-
+import 'package:flutter_tts/flutter_tts.dart';
 import '../models/landmark.dart';
 
 class LanguageController extends GetxController {
@@ -28,10 +28,10 @@ class LanguageController extends GetxController {
   getAllLandmarks(context) {
     final String landmarksJson = S.of(context).landmarks;
 
-    // Decode the JSON string to a list of maps
+    
     final List<dynamic> decodedJson = jsonDecode(landmarksJson);
 
-    // Convert the list of maps to a list of Landmark objects
+    
     landmarks = decodedJson
         .map((landmarkJson) => Landmark.fromJson(landmarkJson))
         .toList();
@@ -48,5 +48,29 @@ class LanguageController extends GetxController {
 
   getSettingText(context) {
     return S.of(context).setting;
+  }
+
+  getWhoWeAreText(context) {
+    return S.of(context).whoWeAre;
+  }
+
+  getBackToMapText(context) {
+    return S.of(context).backToMap;
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeak = false;
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage(Get.locale.toString());
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
+    isSpeak = true;
+    update();
+  }
+
+  Future<void> stopSpeak() async {
+    await flutterTts.stop();
+    isSpeak = false;
+    update();
   }
 }

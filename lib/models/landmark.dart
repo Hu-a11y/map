@@ -1,10 +1,11 @@
-
 class Landmark {
   final String title;
   final String subtitle;
   final String description;
   final String image;
   final String audio;
+  final double latitude;
+  final double longitude;
 
   Landmark({
     required this.title,
@@ -12,9 +13,11 @@ class Landmark {
     required this.description,
     required this.image,
     required this.audio,
+    required this.latitude,
+    required this.longitude,
   });
 
-  // Factory method to create an instance from a map
+ 
   factory Landmark.fromJson(Map<String, dynamic> json) {
     return Landmark(
       title: json['title'],
@@ -22,6 +25,8 @@ class Landmark {
       description: json['description'],
       image: json['image'],
       audio: json['audio'],
+      latitude: json['latitude'] ?? 0,
+      longitude: json['longitude'] ?? 0,
     );
   }
 }

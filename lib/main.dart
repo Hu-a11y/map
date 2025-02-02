@@ -17,7 +17,7 @@ import 'view/map_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -61,33 +61,22 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: Scaffold(
-        backgroundColor: HexColor(backgroundColor),
-        // floatingActionButton: FloatingActionButton(
-        //   backgroundColor: HexColor(fontColor2).withOpacity(.8),
-        //   onPressed: () {
-        //     Get.back();
-        //   },
-        //   child: Icon(
-        //     Icons.arrow_back,
-        //     textDirection: TextDirection.ltr,
-        //     size: 25.sp,
-        //     color: HexColor(fontColor),
-        //   ),
-        // ),
-        body: Stack(
-          children: [
-            DrawerScreen(),
-            DetailsPage(
-              location: LocationModel(
-                latitude: 32.363473,
-                longitude: 44.549068,
-                name: "الموقع 3",
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: MapPage(),
+      //     Scaffold(
+      //   backgroundColor: HexColor(backgroundColor),
+      //   body: Stack(
+      //     children: [
+      //       DrawerScreen(),
+      //       DetailsPage(
+      //         location: LocationModel(
+      //           latitude: 32.363473,
+      //           longitude: 44.549068,
+      //           name: "الموقع 3",
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
