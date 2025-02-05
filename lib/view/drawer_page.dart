@@ -4,8 +4,13 @@ import 'package:get/get.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:map/constant/color.dart';
 import 'package:map/controllers/language_controller.dart';
+import 'package:map/controllers/map_controller.dart';
+import 'package:map/view/map_page.dart';
 
 class DrawerScreen extends StatefulWidget {
+  final int index;
+
+  const DrawerScreen({super.key, required this.index});
   @override
   _DrawerScreenState createState() => _DrawerScreenState();
 }
@@ -64,11 +69,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
                               children: [
                                 ListTile(
                                   onTap: () {
+                                    controller.getAllLandmarks();
                                     Get.updateLocale(const Locale('ar'));
                                     Get.back();
                                     controller.yOffset = 0;
                                     controller.xOffset = 0;
                                     controller.isDrawerOpen = false;
+                                    Get.appUpdate();
                                   },
                                   title: Text(
                                     'العربية',
@@ -149,6 +156,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    // MapController().startLocationTracking();
+
                     Get.back();
                   },
                   child: NewRow(

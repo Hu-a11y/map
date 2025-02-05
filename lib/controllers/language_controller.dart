@@ -6,6 +6,7 @@ import 'package:map/constant/language.dart';
 import 'package:map/generated/l10n.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../models/landmark.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class LanguageController extends GetxController {
   bool isArabic = Get.locale == 'ar';
@@ -14,29 +15,27 @@ class LanguageController extends GetxController {
   double yOffset = 0;
   bool isDrawerOpen = false;
 
-  changeLanguage() {
-    if (languageChosen == languages[0]) {
-      languageChosen = languages[1];
-    } else {
-      languageChosen = languages[0];
-    }
+  List<Landmark> landmarks = [];
 
+  getAllLandmarks() async {
+    String jsonString = await rootBundle.loadString('lib/l10n/intl_en.arb');
+
+    final Map<String, dynamic> jsonMap = json.decode(jsonString);
+    List<dynamic> landmarksList =
+        jsonMap['landmarks'] != null ? json.decode(jsonMap['landmarks']) : [];
+    landmarks = landmarksList.map((e) => Landmark.fromJson(e)).toList();
     update();
   }
+  Landmark? getLandmarkByIndex(BuildContext context, int index) {
+  final jsonString = S.of(context)!.landmarks;
+  final List<dynamic> jsonList = jsonDecode(jsonString);
 
-  List<Landmark>? landmarks;
-  getAllLandmarks(context) {
-    final String landmarksJson = S.of(context).landmarks;
-
-    
-    final List<dynamic> decodedJson = jsonDecode(landmarksJson);
-
-    
-    landmarks = decodedJson
-        .map((landmarkJson) => Landmark.fromJson(landmarkJson))
-        .toList();
-    update();
+  if (index >= 0 && index < jsonList.length) {
+    return Landmark.fromJson(jsonList[index]);
   }
+  return null;
+}
+
 
   getLanguageText(context) {
     return S.of(context).language;

@@ -12,7 +12,6 @@ import '../generated/l10n.dart';
 import '../models/location_model.dart';
 
 class DetailsPage extends StatelessWidget {
-
   final int index;
 
   DetailsPage({required this.index});
@@ -20,13 +19,17 @@ class DetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
+      dispose: (state) {},
       init: LanguageController(),
       builder: (controller) {
-        controller.getAllLandmarks(context);
-        String title = controller.landmarks![index].title;
-        String subTitle = controller.landmarks![index].subtitle;
-        String discription = controller.landmarks![index].description;
-        String image = controller.landmarks![index].image;
+        controller.getAllLandmarks();
+        ;
+        String title = controller.getLandmarkByIndex(context, index)!.title;
+        String subTitle =
+            controller.getLandmarkByIndex(context, index)!.subtitle;
+        String discription =
+            controller.getLandmarkByIndex(context, index)!.description;
+        String image = controller.getLandmarkByIndex(context, index)!.image;
         List<Widget> appBarIcons = [
           controller.isDrawerOpen
               ? GestureDetector(
